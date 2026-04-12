@@ -1,4 +1,5 @@
 export type Specialty = 'nails' | 'coiffure' | 'cils' | 'maquillage' | 'sourcils'
+export type Role = 'admin' | 'client' | 'provider'
 
 export interface Profile {
   id: string
@@ -9,6 +10,7 @@ export interface Profile {
   whatsapp: string
   is_active: boolean
   is_featured: boolean
+  role: Role
   experience_years?: number
   home_service?: boolean
   home_service_radius?: number
@@ -71,6 +73,51 @@ export interface Subscription {
   ends_at?: string
   stripe_subscription_id?: string
   created_at: string
+}
+
+export interface Availability {
+  id: string
+  profile_id: string
+  date: string
+  is_available: boolean
+  note?: string
+  created_at: string
+}
+
+export interface PageView {
+  id: string
+  path: string
+  profile_id?: string
+  visitor_id?: string
+  created_at: string
+}
+
+export interface ProviderStats {
+  totalReservations: number
+  pendingReservations: number
+  confirmedReservations: number
+  completedReservations: number
+  monthRevenue: number
+  profileViews: number
+  weeklyViews: number[]
+  avgRating?: number
+  reviewCount: number
+}
+
+export interface DailyCount {
+  date: string
+  count: number
+}
+
+export interface AdminStats {
+  totalProviders: number
+  activeProviders: number
+  totalReservations: number
+  monthReservations: number
+  totalRevenue: number
+  totalCommissions: number
+  dailyViews: DailyCount[]
+  topProfiles: { id: string; full_name: string; views: number; specialty: string }[]
 }
 
 export interface ProfileWithDetails extends Profile {

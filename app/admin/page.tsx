@@ -9,8 +9,14 @@ export default async function AdminPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white border-b border-gray-100 px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-3"><span className="text-xl">🌸</span><div><h1 className="font-bold text-gray-900">Admin BeautyConnect</h1><p className="text-xs text-gray-400">{user.email}</p></div></div>
-        <a href="/" className="text-sm text-gray-500 hover:text-pink-500">← Voir le site</a>
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-pink-500 to-purple-500 flex items-center justify-center text-white text-sm font-bold">A</div>
+          <div>
+            <h1 className="font-bold text-gray-900">Admin BeautyConnect</h1>
+            <p className="text-xs text-gray-400">{user.email} · Admin</p>
+          </div>
+        </div>
+        <a href="/" className="btn-secondary text-sm py-2 px-4">← Voir le site</a>
       </header>
       <div className="max-w-6xl mx-auto px-4 py-8"><AdminClient /></div>
     </div>

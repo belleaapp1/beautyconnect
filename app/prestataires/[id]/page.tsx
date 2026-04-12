@@ -7,6 +7,7 @@ import ServiceList from '@/components/ServiceList'
 import ReviewList from '@/components/ReviewList'
 import ReviewForm from '@/components/ReviewForm'
 import { StarDisplay } from '@/components/StarRating'
+import PageTracker from '@/components/PageTracker'
 import { getProfileById } from '@/lib/queries'
 import { getSpecialty } from '@/lib/constants'
 import Link from 'next/link'
@@ -30,6 +31,7 @@ export default async function ProfilePage({ params }: { params: { id: string } }
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <PageTracker path={`/prestataires/${params.id}`} profileId={profile.id} />
       <Navbar />
 
       <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
