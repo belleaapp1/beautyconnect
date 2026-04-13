@@ -1,26 +1,11 @@
 'use client'
 import { useEffect, useState, useCallback } from 'react'
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
 import { getAllProfiles, toggleProfileActive, deleteProfile, getAdminStats } from '@/lib/queries'
 import { ProfileWithDetails, AdminStats, Reservation, Specialty } from '@/types'
 import { getSpecialty } from '@/lib/constants'
 import { createClient } from '@/lib/supabase'
-
-// ── Bar chart (CSS only) ──────────────────────────────────────────────────────
-function BarChart({ data }: { data: { date: string; count: number }[] }) {
-  const max = Math.max(...data.map(d => d.count), 1)
-  const recent = data.slice(-14)
-  return (
-    <div className="flex items-end gap-0.5 h-16">
-      {recent.map((d, i) => (
-        <div key={i} className="flex-1">
-          <div className="w-full bg-pink-400 rounded-t opacity-70 hover:opacity-100 transition-opacity cursor-default"
-            style={{ height: `${Math.max((d.count / max) * 56, 2)}px` }}
-            title={`${d.date}: ${d.count}`} />
-        </div>
-      ))}
-    </div>
-  )
-}
+import { Download } from 'lucide-react'
 
 function KPI({ icon, label, value, sub }: { icon: string; label: string; value: string | number; sub?: string }) {
   return (
@@ -57,7 +42,30 @@ function OverviewTab({ stats }: { stats: AdminStats }) {
           </div>
           <p className="text-2xl font-extrabold text-pink-500">{totalViews} vues</p>
         </div>
-        <BarChart data={stats.dailyViews} />
+        <ResponsiveContainer width="100%" height={180}>
+          <AreaChart data={stats.dailyViews.slice(-14)} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
+            <defs>
+              <linearGradient id="adminPink" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%"  stopColor="#EC4899" stopOpacity={0.3} />
+                <stop offset="95%" stopColor="#EC4899" stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" />
+            <XAxis dataKey="date" tick={{ fontSize: 10, fill: '#9CA3AF' }} tickFormatter={v => v.slice(5)} axisLine={false} tickLine={false} />
+            <YAxis tick={{ fontSize: 10, fill: '#9CA3AF' }} axisLine={false} tickLine={false} allowDecimals={false} />
+            <Tooltip
+              content={({ active, payload, label }) =>
+                active && payload?.length ? (
+                  <div className="bg-white border border-gray-100 rounded-xl shadow-card px-3 py-2 text-sm">
+                    <p className="text-gray-400 text-xs">{label}</p>
+                    <p className="font-bold text-pink-600">{payload[0].value} vues</p>
+                  </div>
+                ) : null
+              }
+            />
+            <Area type="monotone" dataKey="count" stroke="#EC4899" strokeWidth={2} fill="url(#adminPink)" dot={false} activeDot={{ r: 5, strokeWidth: 0 }} />
+          </AreaChart>
+        </ResponsiveContainer>
       </div>
 
       {stats.topProfiles.length > 0 && (
@@ -183,10 +191,32 @@ function ReservationsTab() {
     }
     load()
   }, [])
+
+  const exportCSV = () => {
+    const headers = ['Client','Email','Prestation','Date','Heure','Montant','Acompte','Statut']
+    const rows = reservations.map(r => [
+      r.client_name, r.client_email, r.service_name ?? '',
+      r.service_date, r.service_time, r.total_price, r.deposit_amount, r.status
+    ])
+    const csv = [headers, ...rows].map(row => row.map(v => `"${v}"`).join(',')).join('\n')
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' })
+    const url  = URL.createObjectURL(blob)
+    const a    = document.createElement('a')
+    a.href = url; a.download = `reservations-${new Date().toISOString().slice(0,10)}.csv`; a.click()
+    URL.revokeObjectURL(url)
+  }
+
   const SC: Record<string, string> = { pending:'bg-amber-100 text-amber-700', confirmed:'bg-blue-100 text-blue-700', completed:'bg-green-100 text-green-700', cancelled:'bg-red-100 text-red-500' }
-  const SL: Record<string, string> = { pending:'En attente', confirmed:'Confirmee', completed:'Terminee', cancelled:'Annulee' }
+  const SL: Record<string, string> = { pending:'En attente', confirmed:'Confirmée', completed:'Terminée', cancelled:'Annulée' }
   if (loading) return <div className="flex justify-center py-16"><div className="w-8 h-8 border-2 border-pink-500 border-t-transparent rounded-full animate-spin" /></div>
   return (
+    <div className="space-y-3">
+      <div className="flex justify-between items-center">
+        <p className="text-sm text-gray-500">{reservations.length} réservation(s)</p>
+        <button onClick={exportCSV} className="btn-secondary text-sm py-2 px-4 flex items-center gap-2">
+          <Download size={15} /> Exporter CSV
+        </button>
+      </div>
     <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
@@ -215,16 +245,16 @@ function ReservationsTab() {
                 <td className="px-4 py-3"><span className={`badge text-xs ${SC[r.status]}`}>{SL[r.status]}</span></td>
               </tr>
             ))}
-            {reservations.length === 0 && <tr><td colSpan={6} className="text-center py-12 text-gray-400">Aucune reservation</td></tr>}
+            {reservations.length === 0 && <tr><td colSpan={6} className="text-center py-12 text-gray-400">Aucune réservation</td></tr>}
           </tbody>
         </table>
       </div>
-      <div className="px-4 py-3 border-t border-gray-50 text-xs text-gray-400">{reservations.length} reservation(s)</div>
+    </div>
     </div>
   )
 }
 
-// ── Main ──────────────────────────────────────────────────────────────────────
+// ── Main ─────────────────────────────────────────────────────────────────────
 type Tab = 'overview' | 'providers' | 'reservations'
 
 export default function AdminClient() {

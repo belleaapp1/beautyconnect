@@ -16,6 +16,9 @@ export interface Profile {
   home_service_radius?: number
   available?: boolean
   created_at: string
+  is_verified?: boolean
+  instagram_url?: string
+  avatar_url?: string
 }
 
 export interface Service {
@@ -127,4 +130,22 @@ export interface ProfileWithDetails extends Profile {
   min_price?: number
   avg_rating?: number
   review_count?: number
+}
+
+export interface Notification {
+  id: string
+  user_id: string
+  type: string
+  title: string
+  message?: string
+  read: boolean
+  link?: string
+  created_at: string
+}
+
+export interface Favorite {
+  id: string
+  client_id: string
+  profile_id: string
+  created_at: string
 }

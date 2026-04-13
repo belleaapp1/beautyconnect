@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { createServerSupabaseClient } from '@/lib/supabase-server'
 import { redirect } from 'next/navigation'
 import DashboardNav from './DashboardNav'
+import NotificationBell from '@/components/NotificationBell'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = createServerSupabaseClient()
@@ -23,11 +24,12 @@ export default async function DashboardLayout({ children }: { children: React.Re
             <span className="text-xl">🌸</span>
             <span className="font-bold text-gray-900">BeautyConnect</span>
           </Link>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <span className="hidden sm:flex items-center gap-2 text-xs text-gray-400">
               <span className={`w-2 h-2 rounded-full ${role === 'admin' ? 'bg-purple-400' : role === 'client' ? 'bg-blue-400' : 'bg-green-400'}`} />
               {profile?.full_name || user.email}
             </span>
+            <NotificationBell />
             <Link href="/" className="text-sm text-gray-400 hover:text-pink-500 transition-colors">← Site</Link>
             <form action="/auth/signout" method="post">
               <button className="text-xs text-gray-400 hover:text-red-400 transition-colors">Déconnexion</button>

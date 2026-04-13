@@ -1,5 +1,5 @@
 import { createClient } from './supabase'
-import { Profile, Service, Photo, ProfileWithDetails, Specialty, Review, ProviderStats, AdminStats, DailyCount } from '@/types'
+import { Profile, Service, Photo, ProfileWithDetails, Specialty, Review, ProviderStats, AdminStats, DailyCount, Notification } from '@/types'
 
 function getSupabase() { return createClient() }
 
@@ -279,4 +279,85 @@ export async function getMyClientReservations(email: string) {
     .eq('client_email', email)
     .order('service_date', { ascending: false })
   return data ?? []
+}
+
+// ── Favorites ─────────────────────────────────────────────────────────────────
+
+export async function toggleFavorite(profileId: string): Promise<boolean> {
+  const supabase = getSupabase()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Non connecté')
+
+  const { data: existing } = await supabase
+    .from('favorites')
+    .select('id')
+    .eq('client_id', user.id)
+    .eq('profile_id', profileId)
+    .single()
+
+  if (existing) {
+    // Already favorited — remove it
+    await supabase.from('favorites').delete().eq('id', existing.id)
+    return false
+  } else {
+    // Not favorited — add it
+    await supabase.from('favorites').insert({ client_id: user.id, profile_id: profileId })
+    return true
+  }
+}
+
+export async function getMyFavorites(): Promise<string[]> {
+  const supabase = getSupabase()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return []
+  const { data } = await supabase
+    .from('favorites')
+    .select('profile_id')
+    .eq('client_id', user.id)
+  return (data ?? []).map((f: { profile_id: string }) => f.profile_id)
+}
+
+export async function isFavorited(profileId: string): Promise<boolean> {
+  const supabase = getSupabase()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return false
+  const { data } = await supabase
+    .from('favorites')
+    .select('id')
+    .eq('client_id', user.id)
+    .eq('profile_id', profileId)
+    .single()
+  return !!data
+}
+
+// ── Notifications ─────────────────────────────────────────────────────────────
+
+export async function getMyNotifications(): Promise<Notification[]> {
+  const supabase = getSupabase()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return []
+  const { data } = await supabase
+    .from('notifications')
+    .select('*')
+    .eq('user_id', user.id)
+    .order('created_at', { ascending: false })
+    .limit(20)
+  return data ?? []
+}
+
+export async function markNotificationRead(id: string): Promise<void> {
+  const { error } = await getSupabase().from('notifications').update({ read: true }).eq('id', id)
+  if (error) throw error
+}
+
+export async function markAllNotificationsRead(): Promise<void> {
+  const supabase = getSupabase()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Non connecté')
+  const { error } = await supabase
+    .from('notifications')
+    .update({ read: true })
+    .eq('user_id', user.id)
+    .eq('read', false)
+  if (error) throw error
 }
