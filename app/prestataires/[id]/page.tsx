@@ -2,7 +2,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { notFound } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronLeft, ChevronRight, X, Instagram, BadgeCheck } from 'lucide-react'
+import { ChevronLeft, ChevronRight, X, BadgeCheck, ExternalLink } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 import ContactButton from '@/components/ContactButton'
 import ServiceList from '@/components/ServiceList'
@@ -252,7 +252,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-1.5 text-sm text-pink-500 hover:text-pink-600 font-medium transition-colors"
                       >
-                        <Instagram size={15} />
+                        <ExternalLink size={15} />
                         Instagram
                       </a>
                     )}
@@ -364,7 +364,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 text-sm text-pink-500 hover:text-pink-600 font-medium transition-colors"
                 >
-                  <Instagram size={16} />
+                  <ExternalLink size={16} />
                   Voir sur Instagram
                 </a>
               </div>
