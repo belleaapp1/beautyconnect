@@ -4,7 +4,6 @@ import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { ProfileWithDetails } from '@/types'
 import { getSpecialty } from '@/lib/constants'
-import { StarDisplay } from './StarRating'
 
 export default function ProfileCard({ profile, index = 0 }: { profile: ProfileWithDetails; index?: number }) {
   const specialty = getSpecialty(profile.specialty)

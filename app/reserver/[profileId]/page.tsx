@@ -91,7 +91,7 @@ export default function ReserverPage() {
   const depositAmount = selectedService ? Math.round(selectedService.price * DEPOSIT_RATE) : 0
 
   // Handle calendar day click (pick mode, not toggle mode)
-  const handleDatePick = (date: string, _current: boolean) => {
+  const handleDatePick = (date: string) => {
     setSelectedDate(date)
   }
 

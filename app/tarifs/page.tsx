@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import Navbar from '@/components/Navbar'
-import { PLANS } from '@/lib/constants'
 
 export default function TarifsPage() {
   return (

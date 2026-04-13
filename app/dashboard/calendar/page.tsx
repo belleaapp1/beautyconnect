@@ -6,7 +6,6 @@ import { getMyProfile } from '@/lib/queries'
 
 export default function CalendarPage() {
   const [availability, setAvailabilityMap] = useState<Record<string, boolean>>({})
-  const [profileId, setProfileId] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [lastSaved, setLastSaved] = useState<string | null>(null)
@@ -14,7 +13,6 @@ export default function CalendarPage() {
   const load = useCallback(async () => {
     const profile = await getMyProfile()
     if (!profile) return
-    setProfileId(profile.id)
     const av = await getAvailability(profile.id)
     setAvailabilityMap(av)
     setLoading(false)

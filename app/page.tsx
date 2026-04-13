@@ -6,7 +6,7 @@ import SearchBar from '@/components/SearchBar'
 import ProfileCard from '@/components/ProfileCard'
 import { SkeletonGrid } from '@/components/SkeletonCard'
 import { searchProfiles } from '@/lib/queries'
-import { SPECIALTIES, HERO_PHOTOS, PLANS } from '@/lib/constants'
+import { SPECIALTIES, HERO_PHOTOS } from '@/lib/constants'
 import { Specialty } from '@/types'
 import { Search, Calendar, Star, CheckCircle, ArrowRight, Sparkles, Users, MapPin } from 'lucide-react'
 
@@ -385,7 +385,7 @@ export default async function HomePage({
                   title: 'Profite',
                   desc: 'Ta prestataire se déplace chez toi — aucun intermédiaire, zéro commission.',
                 },
-              ].map((item, i) => (
+              ].map((item) => (
                 <div key={item.step} className="relative bg-white rounded-3xl p-7 text-center shadow-sm border border-gray-100 hover:shadow-md transition-shadow z-10">
                   {/* Circle with gradient */}
                   <div className="w-14 h-14 bg-gradient-to-br from-pink-400 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-[var(--shadow-pink)]">
